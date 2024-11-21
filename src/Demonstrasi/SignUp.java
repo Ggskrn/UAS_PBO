@@ -71,7 +71,7 @@ public class SignUp extends javax.swing.JFrame {
         });
 
         comboRole.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        comboRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Choose a role", "Pelanggan", "Driver", "Tukang Laundry" }));
+        comboRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Choose a role", "Customer", "Seller", "Driver" }));
 
         passwordTF.setText("jPasswordField1");
 

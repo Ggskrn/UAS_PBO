@@ -1,8 +1,10 @@
 package Demonstrasi;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -19,7 +21,44 @@ public class DriverMenu extends javax.swing.JFrame {
      */
     public DriverMenu() {
         initComponents();
+        loadPesanan();
     }
+     private void loadPesanan() {
+        DefaultTableModel model = new DefaultTableModel(
+            new String[]{"ID Pesanan", "ID Customer", "ID Driver", "Nama", "Nomor Telepon", "Alamat", "Status Pesanan"}, 0);
+
+        try {
+            Connection conn = dbConnection.getConnection();
+            Statement stmt = conn.createStatement();
+    
+            // Query untuk mendapatkan data pesanan dan customer
+            String query = "SELECT p.idPesanan, p.idCustomer, p.idDriver, c.nameFull, c.noHP, c.alamat, p.statusPesanan " +
+                           "FROM pesanan p " +
+                            "JOIN customer c ON p.idCustomer = c.id";
+
+            ResultSet rs = stmt.executeQuery(query);
+
+            // Loop untuk menambah data ke dalam tabel
+            while (rs.next()) {
+                String idPesanan = rs.getString("idPesanan");
+                String idCustomer = rs.getString("idCustomer");
+                String idDriver = rs.getString("idDriver");
+                String nameFull = rs.getString("nameFull");
+                String noHP = rs.getString("noHP");
+                String alamat = rs.getString("alamat");
+                String statusPesanan = rs.getString("statusPesanan");
+
+                // Menambahkan baris data ke tabel
+                model.addRow(new Object[]{idPesanan, idCustomer, idDriver, nameFull, noHP, alamat, statusPesanan});
+            }
+
+            // Menetapkan model ke jTable1
+            jTable1.setModel(model);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal memuat data pesanan dan customer: " + e.getMessage());
+        }
+    }   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -35,8 +74,6 @@ public class DriverMenu extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jLabel3 = new javax.swing.JLabel();
-        pilihpesananTF = new javax.swing.JTextField();
         antarBT = new javax.swing.JButton();
         exitBT = new javax.swing.JButton();
 
@@ -68,15 +105,6 @@ public class DriverMenu extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jLabel3.setFont(new java.awt.Font("Sitka Text", 1, 14)); // NOI18N
-        jLabel3.setText("Pilih Pesanan");
-
-        pilihpesananTF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pilihpesananTFActionPerformed(evt);
-            }
-        });
-
         antarBT.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         antarBT.setText("Antar Pesanan");
         antarBT.addActionListener(new java.awt.event.ActionListener() {
@@ -101,12 +129,9 @@ public class DriverMenu extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel3)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(pilihpesananTF, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGap(101, 101, 101)
                             .addComponent(antarBT)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addComponent(exitBT))
@@ -128,8 +153,6 @@ public class DriverMenu extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(pilihpesananTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(exitBT)
                     .addComponent(antarBT))
                 .addContainerGap(37, Short.MAX_VALUE))
@@ -150,16 +173,72 @@ public class DriverMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void antarBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_antarBTActionPerformed
-        // TODO add your handling code here:
+        // Ambil baris yang dipilih pada tabel
+        int selectedRow = jTable1.getSelectedRow();
+    
+        if (selectedRow != -1) {
+            // Ambil ID Pesanan dari baris yang dipilih
+            String idPesanan = jTable1.getValueAt(selectedRow, 0).toString();
+
+            // Set status baru langsung menjadi "Delivered"
+            String newStatus = "Delivered";  
+
+            // Update data di database
+            try {
+                // Koneksi ke database
+                Connection conn = dbConnection.getConnection();
+            
+                // SQL query untuk update statusPesanan
+                String query = "UPDATE pesanan SET statusPesanan = ? WHERE idPesanan = ?";
+            
+                // Prepare statement untuk mencegah SQL Injection
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                pstmt.setString(1, newStatus);  
+                pstmt.setString(2, idPesanan);
+
+                // Eksekusi update
+                int rowsUpdated = pstmt.executeUpdate();
+            
+                // Cek apakah update berhasil
+                if (rowsUpdated > 0) {
+                    JOptionPane.showMessageDialog(this, "Status Pesanan berhasil!");
+                    // Refresh data pesanan setelah pembaruan
+                    loadPesanan();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Gagal memperbarui status pesanan.");
+                }
+            
+            } catch (Exception e) {
+                // Jika terjadi error pada koneksi atau query
+                JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+            } finally {
+                try {
+                    // Pastikan koneksi ditutup setelah operasi selesai
+                    if (pstmt != null) {
+                        pstmt.close();
+                    }
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(this, "Error closing connection: " + e.getMessage());
+                }            
+            } else {
+            // Jika tidak ada baris yang dipilih
+            JOptionPane.showMessageDialog(this, "Silakan pilih pesanan yang ingin diupdate.");
+        }
+    }
     }//GEN-LAST:event_antarBTActionPerformed
 
     private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
         // TODO add your handling code here:
+        int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            this.dispose();
+            SignIn signIn = new SignIn();
+            signIn.setVisible(true);
+        }
     }//GEN-LAST:event_exitBTActionPerformed
-
-    private void pilihpesananTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pilihpesananTFActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_pilihpesananTFActionPerformed
 
     /**
      * @param args the command line arguments
@@ -204,10 +283,8 @@ public class DriverMenu extends javax.swing.JFrame {
     private javax.swing.JButton exitBT;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField pilihpesananTF;
     // End of variables declaration//GEN-END:variables
 }

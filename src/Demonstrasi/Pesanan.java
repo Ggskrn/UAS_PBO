@@ -1,8 +1,8 @@
 package Demonstrasi;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.table.DefaultTableModel;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -18,7 +18,44 @@ public class Pesanan extends javax.swing.JFrame {
      * Creates new form UserMenu
      */
     public Pesanan() {
-        initComponents();
+        initComponents();     
+        loadPesananData();
+    }   
+   private void loadPesananData() {
+        // Membuat model tabel dengan kolom sesuai dengan data pesanan
+        DefaultTableModel model = new DefaultTableModel(
+            new String[]{
+                "ID Pesanan", "ID Seller", "ID Driver", 
+                "Total T-shirt", "Total Shirt", "Total Pants", 
+                "Total Cost", "Status Pesanan"
+            }, 0
+        );
+
+        // Mendapatkan data pesanan dari database
+        ResultSet rs = dbConnection.getPesanan(); 
+
+        try {
+            while (rs.next()) {
+                // Membaca setiap baris hasil query
+                Object[] row = new Object[8];
+                row[0] = rs.getString("idPesanan");          
+                row[1] = rs.getString("idSeller");
+                row[2] = rs.getString("idDriver");
+                row[3] = rs.getInt("totalTshirt");
+                row[4] = rs.getInt("totalShirt");
+                row[5] = rs.getInt("totalPants");
+                row[6] = rs.getDouble("totalCost");
+                row[7] = rs.getString("statusPesanan");
+
+                // Menambahkan baris ke dalam model tabel
+                model.addRow(row);
+            }
+
+            // Menetapkan model yang sudah terisi ke jTable1
+            jTable1.setModel(model);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal memuat data pesanan: " + e.getMessage());
+        }
     }
 
     /**
@@ -30,16 +67,16 @@ public class Pesanan extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        NPM = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        hapusData3 = new javax.swing.JButton();
+        exitBT = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        NPM.setBackground(new java.awt.Color(153, 255, 153));
+        jPanel1.setBackground(new java.awt.Color(153, 255, 153));
 
         jTable1.setBackground(new java.awt.Color(153, 153, 0));
         jTable1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
@@ -47,19 +84,19 @@ public class Pesanan extends javax.swing.JFrame {
         jTable1.setForeground(new java.awt.Color(255, 255, 255));
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID Pesanan", "ID Customer", "ID Seller", "ID Driver", "Total T-Shirt", "Total Shirt", "Total Pants", "Total Cost", "Status"
+                "ID Pesanan", "ID Seller", "ID Driver", "Total T-Shirt", "Total Shirt", "Total Pants", "Total Cost", "Status"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
@@ -70,37 +107,37 @@ public class Pesanan extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Snap ITC", 0, 14)); // NOI18N
         jLabel4.setText("PESANAN");
 
-        hapusData3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        hapusData3.setText("Exit");
-        hapusData3.addActionListener(new java.awt.event.ActionListener() {
+        exitBT.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        exitBT.setText("Exit");
+        exitBT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hapusData3ActionPerformed(evt);
+                exitBTActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout NPMLayout = new javax.swing.GroupLayout(NPM);
-        NPM.setLayout(NPMLayout);
-        NPMLayout.setHorizontalGroup(
-            NPMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(NPMLayout.createSequentialGroup()
-                .addGroup(NPMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 660, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(NPMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(NPMLayout.createSequentialGroup()
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
                             .addGap(17, 17, 17)
-                            .addGroup(NPMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, NPMLayout.createSequentialGroup()
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                     .addGap(601, 601, 601)
-                                    .addComponent(hapusData3, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGroup(NPMLayout.createSequentialGroup()
+                                    .addComponent(exitBT, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
                             .addGap(317, 317, 317)
                             .addComponent(jLabel2))))
                 .addContainerGap(13, Short.MAX_VALUE))
         );
-        NPMLayout.setVerticalGroup(
-            NPMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(NPMLayout.createSequentialGroup()
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(8, 8, 8)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -108,7 +145,7 @@ public class Pesanan extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(hapusData3)
+                .addComponent(exitBT)
                 .addContainerGap(13, Short.MAX_VALUE))
         );
 
@@ -116,19 +153,25 @@ public class Pesanan extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(NPM, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(NPM, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void hapusData3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hapusData3ActionPerformed
+    private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_hapusData3ActionPerformed
+        int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            this.dispose();
+            SignIn signIn = new SignIn();
+            signIn.setVisible(true);
+        }
+    }//GEN-LAST:event_exitBTActionPerformed
 
     /**
      * @param args the command line arguments
@@ -169,10 +212,10 @@ public class Pesanan extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel NPM;
-    private javax.swing.JButton hapusData3;
+    private javax.swing.JButton exitBT;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables

@@ -1,8 +1,10 @@
 package Demonstrasi;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -19,8 +21,44 @@ public class SellerMenu extends javax.swing.JFrame {
      */
     public SellerMenu() {
         initComponents();
+        loadPesanan();
     }
+    private void loadPesanan() {
+        DefaultTableModel model = new DefaultTableModel(
+            new String[]{"ID Pesanan", "ID Customer", "ID Driver", "Nama", "Nomor Telepon", "Alamat", "Status Pesanan"}, 0);
 
+        try {
+            Connection conn = dbConnection.getConnection();
+            Statement stmt = conn.createStatement();
+    
+            // Query untuk mendapatkan data pesanan dan customer
+            String query = "SELECT p.idPesanan, p.idCustomer, p.idDriver, c.nameFull, c.noHP, c.alamat, p.statusPesanan " +
+                           "FROM pesanan p " +
+                            "JOIN customer c ON p.idCustomer = c.id";
+
+            ResultSet rs = stmt.executeQuery(query);
+
+            // Loop untuk menambah data ke dalam tabel
+            while (rs.next()) {
+                String idPesanan = rs.getString("idPesanan");
+                String idCustomer = rs.getString("idCustomer");
+                String idDriver = rs.getString("idDriver");
+                String nameFull = rs.getString("nameFull");
+                String noHP = rs.getString("noHP");
+                String alamat = rs.getString("alamat");
+                String statusPesanan = rs.getString("statusPesanan");
+
+                // Menambahkan baris data ke tabel
+                model.addRow(new Object[]{idPesanan, idCustomer, idDriver, nameFull, noHP, alamat, statusPesanan});
+            }
+
+            // Menetapkan model ke jTable1
+            jTable1.setModel(model);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal memuat data pesanan dan customer: " + e.getMessage());
+        }
+    }   
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -30,25 +68,23 @@ public class SellerMenu extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        NPM = new javax.swing.JPanel();
-        simpanData = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        updateBT = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        hapusData3 = new javax.swing.JButton();
-        Alamat2 = new javax.swing.JLabel();
-        ketAlamat2 = new javax.swing.JTextField();
+        exitBT = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        NPM.setBackground(new java.awt.Color(153, 255, 153));
+        jPanel1.setBackground(new java.awt.Color(153, 255, 153));
 
-        simpanData.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        simpanData.setText("Update Status Pesanan");
-        simpanData.addActionListener(new java.awt.event.ActionListener() {
+        updateBT.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        updateBT.setText("Update Status Pesanan");
+        updateBT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                simpanDataActionPerformed(evt);
+                updateBTActionPerformed(evt);
             }
         });
 
@@ -81,50 +117,39 @@ public class SellerMenu extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Snap ITC", 0, 14)); // NOI18N
         jLabel4.setText("SELLER MENU");
 
-        hapusData3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        hapusData3.setText("Exit");
-        hapusData3.addActionListener(new java.awt.event.ActionListener() {
+        exitBT.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        exitBT.setText("Exit");
+        exitBT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hapusData3ActionPerformed(evt);
+                exitBTActionPerformed(evt);
             }
         });
 
-        Alamat2.setFont(new java.awt.Font("Sitka Text", 1, 14)); // NOI18N
-        Alamat2.setText("Pilih Pesanan");
-
-        ketAlamat2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ketAlamat2ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout NPMLayout = new javax.swing.GroupLayout(NPM);
-        NPM.setLayout(NPMLayout);
-        NPMLayout.setHorizontalGroup(
-            NPMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(NPMLayout.createSequentialGroup()
-                .addGroup(NPMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(NPMLayout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addGroup(NPMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(NPMLayout.createSequentialGroup()
-                                .addComponent(Alamat2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(ketAlamat2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(238, 238, 238)
-                                .addComponent(simpanData)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
-                                .addComponent(hapusData3))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 684, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(NPMLayout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addGap(449, 449, 449)
+                                    .addComponent(updateBT)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(exitBT))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 684, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(267, 267, 267)
                         .addComponent(jLabel2)))
-                .addContainerGap())
+                .addContainerGap(20, Short.MAX_VALUE))
         );
-        NPMLayout.setVerticalGroup(
-            NPMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(NPMLayout.createSequentialGroup()
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addComponent(jLabel2)
                 .addGap(16, 16, 16)
@@ -132,11 +157,9 @@ public class SellerMenu extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(NPMLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Alamat2)
-                    .addComponent(ketAlamat2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(hapusData3)
-                    .addComponent(simpanData))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(exitBT)
+                    .addComponent(updateBT))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
@@ -144,27 +167,89 @@ public class SellerMenu extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(NPM, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(NPM, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void simpanDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanDataActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_simpanDataActionPerformed
+    private void updateBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBTActionPerformed
+        // Ambil baris yang dipilih pada tabel
+        int selectedRow = jTable1.getSelectedRow();
+    
+        if (selectedRow != -1) {
+            // Ambil ID Pesanan dari baris yang dipilih
+            String idPesanan = jTable1.getValueAt(selectedRow, 0).toString();
+        
+            // Tampilkan dialog untuk memilih status baru
+            String[] statusOptions = {"Pending", "Processed", "Delivered"};
+            String newStatus = (String) JOptionPane.showInputDialog(
+                    this,
+                    "Pilih status baru untuk pesanan:",
+                    "Update Status Pesanan",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    statusOptions,
+                    statusOptions[0] // Set default option
+            );
 
-    private void hapusData3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hapusData3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_hapusData3ActionPerformed
+            // Pastikan status tidak kosong
+            if (newStatus != null && !newStatus.isEmpty()) {
+                // Update data di database
+                try {
+                    // Koneksi ke database
+                    Connection conn = dbConnection.getConnection();
+                
+                    // SQL query untuk update statusPesanan
+                    String query = "UPDATE pesanan SET statusPesanan = ? WHERE idPesanan = ?";
+                    
+                    // Prepare statement untuk mencegah SQL Injection
+                    PreparedStatement pstmt = conn.prepareStatement(query);
+                    pstmt.setString(1, newStatus);
+                    pstmt.setString(2, idPesanan);  
 
-    private void ketAlamat2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ketAlamat2ActionPerformed
+                    // Eksekusi update
+                    int rowsUpdated = pstmt.executeUpdate();
+                
+                    // Cek apakah update berhasil
+                    if (rowsUpdated > 0) {
+                        JOptionPane.showMessageDialog(this, "Status Pesanan berhasil diperbarui!");
+                        // Refresh data pesanan setelah pembaruan
+                        loadPesanan();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Gagal memperbarui status pesanan.");
+                    }
+                
+                    // Menutup koneksi setelah eksekusi
+                    conn.close();
+                
+                } catch (Exception e) {
+                    // Jika terjadi error pada koneksi atau query
+                    JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+                }
+            } else {
+                // Jika status tidak dipilih atau kosong
+                JOptionPane.showMessageDialog(this, "Status Pesanan tidak boleh kosong.");
+            }
+        } else {
+            // Jika tidak ada baris yang dipilih
+            JOptionPane.showMessageDialog(this, "Silakan pilih pesanan yang ingin diupdate.");
+        }
+    }//GEN-LAST:event_updateBTActionPerformed
+
+    private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_ketAlamat2ActionPerformed
+        int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            this.dispose();
+            SignIn signIn = new SignIn();
+            signIn.setVisible(true);
+        }
+    }//GEN-LAST:event_exitBTActionPerformed
 
     /**
      * @param args the command line arguments
@@ -205,14 +290,12 @@ public class SellerMenu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel Alamat2;
-    private javax.swing.JPanel NPM;
-    private javax.swing.JButton hapusData3;
+    private javax.swing.JButton exitBT;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField ketAlamat2;
-    private javax.swing.JButton simpanData;
+    private javax.swing.JButton updateBT;
     // End of variables declaration//GEN-END:variables
 }

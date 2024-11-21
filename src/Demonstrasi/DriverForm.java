@@ -1,5 +1,9 @@
 package Demonstrasi;
-
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -9,12 +13,12 @@ package Demonstrasi;
  *
  * @author USER
  */
-public class Driver extends javax.swing.JFrame {
+public class DriverForm extends javax.swing.JFrame {
 
     /**
      * Creates new form Driver
      */
-    public Driver() {
+    public DriverForm() {
         initComponents();
     }
 
@@ -34,8 +38,8 @@ public class Driver extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         ketAlamat = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        hapusData3 = new javax.swing.JButton();
-        simpanData = new javax.swing.JButton();
+        exitBT = new javax.swing.JButton();
+        simpanBT = new javax.swing.JButton();
         Nama = new javax.swing.JLabel();
         ketNama = new javax.swing.JTextField();
         NomorTelepon = new javax.swing.JLabel();
@@ -63,21 +67,21 @@ public class Driver extends javax.swing.JFrame {
 
         jLabel5.setFont(new java.awt.Font("Snap ITC", 0, 14)); // NOI18N
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("DRIVER");
+        jLabel5.setText("DRIVER FORM");
 
-        hapusData3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        hapusData3.setText("Exit");
-        hapusData3.addActionListener(new java.awt.event.ActionListener() {
+        exitBT.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        exitBT.setText("Exit");
+        exitBT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hapusData3ActionPerformed(evt);
+                exitBTActionPerformed(evt);
             }
         });
 
-        simpanData.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        simpanData.setText("Daftar");
-        simpanData.addActionListener(new java.awt.event.ActionListener() {
+        simpanBT.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        simpanBT.setText("Daftar");
+        simpanBT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                simpanDataActionPerformed(evt);
+                simpanBTActionPerformed(evt);
             }
         });
 
@@ -111,8 +115,10 @@ public class Driver extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(simpanData)
-                .addGap(231, 231, 231))
+                .addComponent(simpanBT)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(exitBT)
+                .addGap(142, 142, 142))
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(14, 14, 14)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -123,12 +129,11 @@ public class Driver extends javax.swing.JFrame {
                         .addComponent(jLabel5)
                         .addGap(181, 181, 181)
                         .addComponent(jLabel2)))
-                .addGap(0, 252, Short.MAX_VALUE))
+                .addGap(0, 196, Short.MAX_VALUE))
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap(134, Short.MAX_VALUE)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(hapusData3, javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(ketAlamat, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
                             .addComponent(ketNomorTelepon))
@@ -148,9 +153,11 @@ public class Driver extends javax.swing.JFrame {
                 .addComponent(NomorTelepon)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(Alamat)
-                .addGap(10, 10, 10)
-                .addComponent(simpanData)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(simpanBT)
+                    .addComponent(exitBT))
+                .addGap(21, 21, 21))
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addGap(64, 64, 64)
@@ -159,9 +166,7 @@ public class Driver extends javax.swing.JFrame {
                     .addComponent(ketNomorTelepon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(ketAlamat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(hapusData3)
-                    .addGap(161, 161, 161)))
+                    .addContainerGap(68, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -175,10 +180,10 @@ public class Driver extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -194,8 +199,8 @@ public class Driver extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -240,16 +245,59 @@ public class Driver extends javax.swing.JFrame {
         ketAlamat.setText("");
     }//GEN-LAST:event_ketAlamatActionPerformed
 
-    private void hapusData3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hapusData3ActionPerformed
+    private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_hapusData3ActionPerformed
+        int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            this.dispose();
+            SignIn signIn = new SignIn();
+            signIn.setVisible(true);
+        }
+    }//GEN-LAST:event_exitBTActionPerformed
 
-    private void simpanDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanDataActionPerformed
+    private void simpanBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanBTActionPerformed
         // TODO add your handling code here:
-        ketNama.setText("");
-        ketNomorTelepon.setText("");
-        ketAlamat.setText("");
-    }//GEN-LAST:event_simpanDataActionPerformed
+        String fullName = ketNama.getText();
+        String phoneNumber = ketNomorTelepon.getText();
+        String address = ketAlamat.getText();
+
+        if (fullName.isEmpty() || phoneNumber.isEmpty() || address.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Semua field harus diisi!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Cek apakah customer sudah terdaftar dengan nomor telepon yang sama
+        Connection conn = dbConnection.getConnection();
+        String checkSQL = "SELECT * FROM Driver WHERE noHP = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkSQL)) {
+            checkStmt.setString(1, phoneNumber);
+            ResultSet rs = checkStmt.executeQuery();
+
+            if (rs.next()) {
+                // Jika Driver sudah terdaftar, arahkan ke menu customer
+                JOptionPane.showMessageDialog(this, "Anda sudah terdaftar. Klik ok untuk melanjutkan ke menu driver.");
+                this.setVisible(false);
+                new DriverMenu().setVisible(true);
+            } else {
+                // Jika Driver belum terdaftar, simpan data baru
+                String insertSQL = "INSERT INTO driver (nameFull, noHP, alamat) VALUES (?, ?, ?)";
+                try (PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
+                    stmt.setString(1, fullName);
+                    stmt.setString(2, phoneNumber);
+                    stmt.setString(3, address);
+                    stmt.executeUpdate();
+
+                    JOptionPane.showMessageDialog(this, "Data berhasil disimpan! Anda sekarang terdaftar.");
+                    this.setVisible(false);
+                    new DriverMenu().setVisible(true);
+                } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_simpanBTActionPerformed
 
     private void ketNamaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ketNamaActionPerformed
         // TODO add your handling code here:
@@ -278,14 +326,18 @@ public class Driver extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Driver.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DriverForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Driver.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DriverForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Driver.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DriverForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Driver.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DriverForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -294,7 +346,7 @@ public class Driver extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Driver().setVisible(true);
+                new DriverForm().setVisible(true);
             }
         });
     }
@@ -303,7 +355,7 @@ public class Driver extends javax.swing.JFrame {
     private javax.swing.JLabel Alamat;
     private javax.swing.JLabel Nama;
     private javax.swing.JLabel NomorTelepon;
-    private javax.swing.JButton hapusData3;
+    private javax.swing.JButton exitBT;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
@@ -313,6 +365,6 @@ public class Driver extends javax.swing.JFrame {
     private javax.swing.JTextField ketAlamat;
     private javax.swing.JTextField ketNama;
     private javax.swing.JTextField ketNomorTelepon;
-    private javax.swing.JButton simpanData;
+    private javax.swing.JButton simpanBT;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,18 +1,19 @@
 package Demonstrasi;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.event.*;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 /**
  *
  * @author USER/*
  */
-public class Seller extends javax.swing.JFrame {
+public class CustomerForm extends javax.swing.JFrame {
     /**
      * Creates new form Seller
      */
-    public Seller() {
-        initComponents();     
+    public CustomerForm() {
+        initComponents();
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -29,8 +30,8 @@ public class Seller extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         ketAlamat = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        exit = new javax.swing.JButton();
-        simpanData = new javax.swing.JButton();
+        exitBT = new javax.swing.JButton();
+        simpanBT = new javax.swing.JButton();
         Nama = new javax.swing.JLabel();
         ketNama = new javax.swing.JTextField();
         NomorTelepon = new javax.swing.JLabel();
@@ -55,21 +56,21 @@ public class Seller extends javax.swing.JFrame {
         });
 
         jLabel5.setFont(new java.awt.Font("Snap ITC", 0, 14)); // NOI18N
-        jLabel5.setText("SELLER");
+        jLabel5.setText("CUSTOMER FORM");
 
-        exit.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        exit.setText("Exit");
-        exit.addActionListener(new java.awt.event.ActionListener() {
+        exitBT.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        exitBT.setText("Exit");
+        exitBT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitActionPerformed(evt);
+                exitBTActionPerformed(evt);
             }
         });
 
-        simpanData.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        simpanData.setText("Daftar");
-        simpanData.addActionListener(new java.awt.event.ActionListener() {
+        simpanBT.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        simpanBT.setText("Daftar");
+        simpanBT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                simpanDataActionPerformed(evt);
+                simpanBTActionPerformed(evt);
             }
         });
 
@@ -99,68 +100,62 @@ public class Seller extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap(23, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(27, 27, 27))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(Nama, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(518, 518, 518))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(simpanData)
-                        .addGap(18, 18, 18)
-                        .addComponent(exit)
-                        .addGap(176, 176, 176))))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(simpanBT)
+                                .addGap(18, 18, 18)
+                                .addComponent(exitBT))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(Alamat, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(NomorTelepon)
+                                    .addComponent(Nama, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(ketNomorTelepon, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
+                                    .addComponent(ketAlamat)
+                                    .addComponent(ketNama))))
+                        .addGap(3, 3, 3)))
+                .addGap(0, 36, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addGap(17, 17, 17)
                     .addComponent(jLabel5)
-                    .addGap(514, 514, 514))
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                    .addContainerGap(25, Short.MAX_VALUE)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(ketNama, javax.swing.GroupLayout.PREFERRED_SIZE, 485, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(NomorTelepon, javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(Alamat, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel3Layout.createSequentialGroup()
-                                    .addGap(34, 34, 34)
-                                    .addComponent(ketNomorTelepon, javax.swing.GroupLayout.PREFERRED_SIZE, 485, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(ketAlamat, javax.swing.GroupLayout.PREFERRED_SIZE, 485, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                    .addContainerGap()))
+                    .addContainerGap(329, Short.MAX_VALUE)))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addGap(20, 20, 20)
                 .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(Nama)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(NomorTelepon)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(Alamat))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(ketNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ketNomorTelepon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ketAlamat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addComponent(Nama)
-                .addGap(63, 63, 63)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(simpanData)
-                    .addComponent(exit))
-                .addContainerGap(14, Short.MAX_VALUE))
+                    .addComponent(simpanBT)
+                    .addComponent(exitBT))
+                .addContainerGap(7, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addGap(23, 23, 23)
                     .addComponent(jLabel5)
-                    .addGap(22, 22, 22)
-                    .addComponent(ketNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(ketNomorTelepon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(NomorTelepon))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(Alamat)
-                        .addComponent(ketAlamat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addContainerGap(46, Short.MAX_VALUE)))
+                    .addContainerGap(148, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -169,8 +164,8 @@ public class Seller extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -186,8 +181,8 @@ public class Seller extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -215,14 +210,59 @@ public class Seller extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
+    private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
         // TODO add your handling code here:
-        System.exit(0);
-    }//GEN-LAST:event_exitActionPerformed
+        int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            this.dispose();
+            SignIn signIn = new SignIn();
+            signIn.setVisible(true);
+        }
+    }//GEN-LAST:event_exitBTActionPerformed
 
-    private void simpanDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanDataActionPerformed
-        // TODO add your handling code here:       
-    }//GEN-LAST:event_simpanDataActionPerformed
+    private void simpanBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanBTActionPerformed
+        // TODO add your handling code here:
+        String fullName = ketNama.getText();
+        String phoneNumber = ketNomorTelepon.getText();
+        String address = ketAlamat.getText();
+
+        if (fullName.isEmpty() || phoneNumber.isEmpty() || address.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Semua field harus diisi!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Cek apakah customer sudah terdaftar dengan nomor telepon yang sama
+        Connection conn = dbConnection.getConnection();
+        String checkSQL = "SELECT * FROM customer WHERE noHP = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkSQL)) {
+            checkStmt.setString(1, phoneNumber);
+            ResultSet rs = checkStmt.executeQuery();
+
+            if (rs.next()) {
+                // Jika customer sudah terdaftar, arahkan ke menu customer
+                JOptionPane.showMessageDialog(this, "Anda sudah terdaftar. Klik OK untuk ke menu customer.");
+                this.setVisible(false);
+                new CustomerMenu().setVisible(true);
+            } else {
+                // Jika customer belum terdaftar, simpan data baru
+                String insertSQL = "INSERT INTO customer (nameFull, noHP, alamat) VALUES (?, ?, ?)";
+                try (PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
+                    stmt.setString(1, fullName);
+                    stmt.setString(2, phoneNumber);
+                    stmt.setString(3, address);
+                    stmt.executeUpdate();
+
+                    JOptionPane.showMessageDialog(this, "SELAMAT!! Anda sekarang terdaftar.");
+                    this.setVisible(false);
+                    new CustomerMenu().setVisible(true);
+                } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_simpanBTActionPerformed
 
     private void ketNomorTeleponActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ketNomorTeleponActionPerformed
         // TODO add your handling code here:
@@ -256,21 +296,23 @@ public class Seller extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Seller.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CustomerForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Seller.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CustomerForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Seller.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CustomerForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Seller.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CustomerForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {              
-                new Seller().setVisible(true);
+                new CustomerForm().setVisible(true);
             }
         });
     }
@@ -279,7 +321,7 @@ public class Seller extends javax.swing.JFrame {
     private javax.swing.JLabel Alamat;
     private javax.swing.JLabel Nama;
     private javax.swing.JLabel NomorTelepon;
-    private javax.swing.JButton exit;
+    private javax.swing.JButton exitBT;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
@@ -288,6 +330,6 @@ public class Seller extends javax.swing.JFrame {
     private javax.swing.JTextField ketAlamat;
     private javax.swing.JTextField ketNama;
     private javax.swing.JTextField ketNomorTelepon;
-    private javax.swing.JButton simpanData;
+    private javax.swing.JButton simpanBT;
     // End of variables declaration//GEN-END:variables
 }

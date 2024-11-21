@@ -5,7 +5,10 @@
 package Demonstrasi;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.SQLException;
+import javax.swing.JOptionPane;
 /**
  *
  * @author FERDI YANSAH
@@ -28,5 +31,30 @@ public class dbConnection {
             }
         }
         return connection;
+    }
+     public static void closeConnection() {
+        if (connection != null) {
+            try {
+                connection.close();
+                connection = null;
+                System.out.println("Koneksi ditutup!");
+            } catch (SQLException e) {
+                System.out.println("Gagal menutup koneksi: " + e.getMessage());
+            }
+        }
+    }
+     // Method untuk mengambil data pesanan dari database
+    public static ResultSet getPesanan() {
+        Connection conn = getConnection();
+        if (conn != null) {
+            try {
+                String query = "SELECT * FROM pesanan";  // Query untuk mengambil semua data pesanan
+                Statement stmt = conn.createStatement();
+                return stmt.executeQuery(query);  // Mengembalikan ResultSet
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Gagal mengambil data pesanan: " + e.getMessage());
+            }
+        }
+        return null;
     }
 }

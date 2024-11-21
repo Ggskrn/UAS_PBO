@@ -61,6 +61,11 @@ public class SignIn extends javax.swing.JFrame {
         usernameTF.setFont(new java.awt.Font("Segoe UI Black", 1, 12)); // NOI18N
         usernameTF.setForeground(new java.awt.Color(51, 51, 255));
         usernameTF.setText("Username");
+        usernameTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usernameTFActionPerformed(evt);
+            }
+        });
 
         signinBT.setBackground(new java.awt.Color(153, 255, 153));
         signinBT.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -206,28 +211,51 @@ public class SignIn extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Username dan password harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        String role = validateLogin(username, password);
 
-        if (authenticateUser(username, password)) {
-            JOptionPane.showMessageDialog(this, "Login berhasil!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
-            // Navigasi ke dashboard (contoh navigasi umum)          
-            this.dispose(); // Tutup form Sign-In
+        if (role == null) {
+            JOptionPane.showMessageDialog(this, "Username atau Password salah!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(this, "Login gagal! Username atau password salah.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Login sukses!", "Information", JOptionPane.INFORMATION_MESSAGE);
+            this.dispose();
+
+           // di arahkan ke dashboard yang sesuai berdasarkan peran
+            switch (role) {
+                case "Customer":
+                    new CustomerForm().setVisible(true);
+                    break;
+                case "Seller":
+                    new SellerForm().setVisible(true);
+                    break;
+                case "Driver":
+                    new DriverForm().setVisible(true);
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(this, "Invalid role!", "Error", JOptionPane.ERROR_MESSAGE);
+                    break;
+            }
         }
-    }//GEN-LAST:event_signinBTActionPerformed
-    private boolean authenticateUser(String username, String password) {
+    }
+    private String validateLogin(String username, String password) {
         Connection connection = dbConnection.getConnection();
-        String query = "SELECT id FROM users WHERE username = ? AND password = ?";
+        String query = "SELECT role FROM users WHERE username = ? AND password = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, username);
-            statement.setString(2, password); // Sesuaikan jika ada hashing
+            statement.setString(2, password);
             ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();
+            if (resultSet.next()) {
+                return resultSet.getString("role");
+            }
         } catch (SQLException e) {
-            System.out.println("Error saat login: " + e.getMessage());
+            System.out.println("Login error: " + e.getMessage());
         }
-        return false;
-    }
+        return null;
+    }//GEN-LAST:event_signinBTActionPerformed
+
+    private void usernameTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameTFActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_usernameTFActionPerformed
+  
     /**
      * @param args the command line arguments
      */
