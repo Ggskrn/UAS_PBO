@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 /*
@@ -173,41 +174,50 @@ public class DriverMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void antarBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_antarBTActionPerformed
+        // Cek apakah tabel memiliki data
+        if (jTable1.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Tabel kosong, tidak ada data untuk diperbarui.");
+            return;
+        }
+
         // Ambil baris yang dipilih pada tabel
         int selectedRow = jTable1.getSelectedRow();
-    
+
         if (selectedRow != -1) {
             // Ambil ID Pesanan dari baris yang dipilih
             String idPesanan = jTable1.getValueAt(selectedRow, 0).toString();
 
             // Set status baru langsung menjadi "Delivered"
-            String newStatus = "Delivered";  
+            String newStatus = "Delivered";
 
             // Update data di database
+            Connection conn = null;
+            PreparedStatement pstmt = null;
+
             try {
                 // Koneksi ke database
-                Connection conn = dbConnection.getConnection();
-            
+                conn = dbConnection.getConnection();
+
                 // SQL query untuk update statusPesanan
                 String query = "UPDATE pesanan SET statusPesanan = ? WHERE idPesanan = ?";
-            
-                // Prepare statement untuk mencegah SQL Injection
-                PreparedStatement pstmt = conn.prepareStatement(query);
-                pstmt.setString(1, newStatus);  
-                pstmt.setString(2, idPesanan);
 
+                // Prepare statement untuk mencegah SQL Injection
+                pstmt = conn.prepareStatement(query);
+                pstmt.setString(1, newStatus); // Set status baru menjadi "Delivered"
+                pstmt.setString(2, idPesanan); // Set idPesanan yang dipilih
+                
                 // Eksekusi update
                 int rowsUpdated = pstmt.executeUpdate();
-            
+
                 // Cek apakah update berhasil
                 if (rowsUpdated > 0) {
-                    JOptionPane.showMessageDialog(this, "Status Pesanan berhasil!");
+                    JOptionPane.showMessageDialog(this, "Status Pesanan berhasil diperbarui menjadi Delivered!");
                     // Refresh data pesanan setelah pembaruan
                     loadPesanan();
                 } else {
                     JOptionPane.showMessageDialog(this, "Gagal memperbarui status pesanan.");
                 }
-            
+
             } catch (Exception e) {
                 // Jika terjadi error pada koneksi atau query
                 JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
@@ -222,12 +232,12 @@ public class DriverMenu extends javax.swing.JFrame {
                     }
                 } catch (SQLException e) {
                     JOptionPane.showMessageDialog(this, "Error closing connection: " + e.getMessage());
-                }            
-            } else {
+                }
+            }
+        } else {
             // Jika tidak ada baris yang dipilih
             JOptionPane.showMessageDialog(this, "Silakan pilih pesanan yang ingin diupdate.");
         }
-    }
     }//GEN-LAST:event_antarBTActionPerformed
 
     private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed

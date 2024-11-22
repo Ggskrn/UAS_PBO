@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 /*
@@ -180,41 +181,49 @@ public class SellerMenu extends javax.swing.JFrame {
     private void updateBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBTActionPerformed
         // Ambil baris yang dipilih pada tabel
         int selectedRow = jTable1.getSelectedRow();
-    
+
         if (selectedRow != -1) {
             // Ambil ID Pesanan dari baris yang dipilih
             String idPesanan = jTable1.getValueAt(selectedRow, 0).toString();
-        
+
             // Tampilkan dialog untuk memilih status baru
             String[] statusOptions = {"Pending", "Processed", "Delivered"};
             String newStatus = (String) JOptionPane.showInputDialog(
-                    this,
-                    "Pilih status baru untuk pesanan:",
-                    "Update Status Pesanan",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    statusOptions,
-                    statusOptions[0] // Set default option
+                this,
+                "Pilih status baru untuk pesanan:",
+                "Update Status Pesanan",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                statusOptions,
+                statusOptions[0] // Set default option
             );
 
             // Pastikan status tidak kosong
             if (newStatus != null && !newStatus.isEmpty()) {
-                // Update data di database
+                // Deklarasi koneksi dan prepared statement di luar try
+                Connection conn = null;
+                PreparedStatement pstmt = null;
+
                 try {
                     // Koneksi ke database
-                    Connection conn = dbConnection.getConnection();
-                
+                    conn = dbConnection.getConnection();
+
+                    if (conn == null || conn.isClosed()) {
+                        JOptionPane.showMessageDialog(this, "Koneksi ke database gagal.");
+                        return;
+}
+
                     // SQL query untuk update statusPesanan
                     String query = "UPDATE pesanan SET statusPesanan = ? WHERE idPesanan = ?";
-                    
+
                     // Prepare statement untuk mencegah SQL Injection
-                    PreparedStatement pstmt = conn.prepareStatement(query);
-                    pstmt.setString(1, newStatus);
-                    pstmt.setString(2, idPesanan);  
+                    pstmt = conn.prepareStatement(query);
+                    pstmt.setString(1, newStatus); // Set status baru
+                    pstmt.setString(2, idPesanan); // Set idPesanan yang dipilih
 
                     // Eksekusi update
                     int rowsUpdated = pstmt.executeUpdate();
-                
+
                     // Cek apakah update berhasil
                     if (rowsUpdated > 0) {
                         JOptionPane.showMessageDialog(this, "Status Pesanan berhasil diperbarui!");
@@ -223,15 +232,24 @@ public class SellerMenu extends javax.swing.JFrame {
                     } else {
                         JOptionPane.showMessageDialog(this, "Gagal memperbarui status pesanan.");
                     }
-                
-                    // Menutup koneksi setelah eksekusi
-                    conn.close();
-                
-                } catch (Exception e) {
+
+                } catch (SQLException e) {
                     // Jika terjadi error pada koneksi atau query
-                    JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+                    JOptionPane.showMessageDialog(this, "Error pada query atau koneksi: " + e.getMessage());
+                } finally {
+                    // Pastikan koneksi dan statement ditutup dengan benar
+                    try {
+                        if (pstmt != null) {
+                            pstmt.close();
+                        }
+                        if (conn != null && !conn.isClosed()) {
+                            conn.close();
+                        }
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(this, "Error closing connection: " + e.getMessage());
+                    }
                 }
-            } else {
+            } else {    
                 // Jika status tidak dipilih atau kosong
                 JOptionPane.showMessageDialog(this, "Status Pesanan tidak boleh kosong.");
             }
