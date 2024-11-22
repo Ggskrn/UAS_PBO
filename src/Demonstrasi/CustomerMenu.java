@@ -492,13 +492,9 @@ public class CustomerMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_ketjumlahCelanaActionPerformed
 
     private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
-        // TODO add your handling code here:
-        int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            this.dispose();
-            SignIn signIn = new SignIn();
-            signIn.setVisible(true);
-        }
+        // TODO add your handling code here:       
+        new Closing().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_exitBTActionPerformed
 
     private void pilihdriverTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pilihdriverTFActionPerformed
