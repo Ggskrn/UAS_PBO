@@ -241,7 +241,7 @@ public class SellerForm extends javax.swing.JFrame {
 
             if (rs.next()) {
                 // Jika seller sudah terdaftar, arahkan ke menu customer
-                JOptionPane.showMessageDialog(this, "Anda sudah terdaftar. Klik ok untuk melanjutkan ke menu seller.");
+                JOptionPane.showMessageDialog(this, "Anda sudah terdaftar. Klik OK untuk melanjutkan ke menu seller.");
                 this.setVisible(false);
                 new SellerMenu().setVisible(true);
             } else {
