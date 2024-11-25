@@ -176,7 +176,7 @@ public class SignUp extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void signupBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signupBTActionPerformed
-        // TODO add your handling code here:
+        // Ambil data input
         String username = usernameTF.getText().trim();
         String password = new String(passwordTF.getPassword());
         String role = (String) comboRole.getSelectedItem();
@@ -187,15 +187,39 @@ public class SignUp extends javax.swing.JFrame {
             return;
         }
 
+        // Cek apakah username sudah ada
         if (isUsernameTaken(username)) {
             JOptionPane.showMessageDialog(this, "Username sudah digunakan, pilih username lain.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        if (registerUser(username, password, role)) {
+        // Generate ID untuk user sesuai role (Customer, Seller, Driver)
+        int userId = generateUserId(role);
+        if (userId == -1) {
+            JOptionPane.showMessageDialog(this, "Gagal menghasilkan ID untuk pengguna.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Daftarkan user ke tabel users
+        if (registerUser(userId, username, password, role)) {
             JOptionPane.showMessageDialog(this, "Pendaftaran berhasil!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
-            this.dispose(); // Close Sign-Up form
-            new SignIn().setVisible(true);
+            this.dispose(); // Tutup form SignUp
+
+            // Buka form berdasarkan role dan kirimkan userId ke form terkait
+            switch (role) {
+                case "Customer":
+                    new CustomerForm(userId).setVisible(true); // Kirim userId ke CustomerForm
+                    break;
+                case "Seller":
+                    new SellerForm(userId).setVisible(true); // Kirim userId ke SellerForm
+                    break;
+                case "Driver":
+                    new DriverForm(userId).setVisible(true); // Kirim userId ke DriverForm
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(this, "Invalid role!", "Error", JOptionPane.ERROR_MESSAGE);
+                    break;
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Pendaftaran gagal. Coba lagi.", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -203,15 +227,54 @@ public class SignUp extends javax.swing.JFrame {
 
     private void usernameTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameTFActionPerformed
         // TODO add your handling code here:
-        passwordTF.setText("");
     }//GEN-LAST:event_usernameTFActionPerformed
-     private boolean registerUser(String username, String password, String role) {
+    private int generateUserId(String role) {
         Connection connection = dbConnection.getConnection();
-        String query = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
+        String query = "";
+        int idStart = 0, idEnd = 0;
+
+        // Tentukan rentang ID berdasarkan role
+        if (role.equals("Customer")) {
+            idStart = 1000;
+            idEnd = 1999;
+        } else if (role.equals("Seller")) {
+            idStart = 2000;
+            idEnd = 2999;
+        } else if (role.equals("Driver")) {
+            idStart = 3000;
+            idEnd = 3999;
+        } else {
+            return -1; // Role tidak valid
+        }
+        
+        // Cari ID terakhir dalam rentang
+        query = "SELECT MAX(id) AS lastId FROM users WHERE id BETWEEN ? AND ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, username);
-            statement.setString(2, password); // Bisa ditambahkan hashing
-            statement.setString(3, role);
+            statement.setInt(1, idStart);
+            statement.setInt(2, idEnd);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int lastId = resultSet.getInt("lastId");
+                // Jika belum ada ID dalam rentang, gunakan idStart, jika ada, tambahkan 1
+                if (lastId == 0) {
+                    return idStart;
+                } else if (lastId < idEnd) {
+                    return lastId + 1;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error saat menghasilkan ID: " + e.getMessage());
+        }
+        return -1; // Gagal menghasilkan ID
+    }
+    private boolean registerUser(int userId, String username, String password, String role) {
+        Connection connection = dbConnection.getConnection();
+        String query = "INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            statement.setString(2, username);
+            statement.setString(3, password); // Bisa ditambahkan hashing
+            statement.setString(4, role);
             int rowsInserted = statement.executeUpdate();
             return rowsInserted > 0;
         } catch (SQLException e) {
@@ -219,7 +282,6 @@ public class SignUp extends javax.swing.JFrame {
         }
         return false;
     }
-
     private boolean isUsernameTaken(String username) {
         Connection connection = dbConnection.getConnection();
         String query = "SELECT id FROM users WHERE username = ?";
@@ -278,12 +340,4 @@ public class SignUp extends javax.swing.JFrame {
     private javax.swing.JButton signupBT;
     private javax.swing.JTextField usernameTF;
     // End of variables declaration//GEN-END:variables
-
-    private boolean validateLogin(String username, String password, String role) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    private boolean addUser(String username, String password, String role) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 }

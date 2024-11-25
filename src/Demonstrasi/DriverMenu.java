@@ -16,26 +16,29 @@ import javax.swing.table.DefaultTableModel;
  * @author USER
  */
 public class DriverMenu extends javax.swing.JFrame {
-
+    private int userId;
     /**
      * Creates new form UserMenu
      */
-    public DriverMenu() {
+    public DriverMenu(int userId) {
+         this.userId = userId;
         initComponents();
         loadPesanan();
     }
-     private void loadPesanan() {
+    // Memuat data pesanan dari database yang terkait dengan driver
+    private void loadPesanan() {
         DefaultTableModel model = new DefaultTableModel(
-            new String[]{"ID Pesanan", "ID Customer", "ID Driver", "Nama", "Nomor Telepon", "Alamat", "Status Pesanan"}, 0);
+            new String[]{"ID Pesanan", "ID Customer", "ID Driver", "Nama Customer", "Nomor Telepon", "Alamat", "Status Pesanan"}, 0);
 
         try {
             Connection conn = dbConnection.getConnection();
             Statement stmt = conn.createStatement();
     
-            // Query untuk mendapatkan data pesanan dan customer
+            // Query untuk mendapatkan data pesanan dan customer yang terkait dengan idDriver
             String query = "SELECT p.idPesanan, p.idCustomer, p.idDriver, c.nameFull, c.noHP, c.alamat, p.statusPesanan " +
                            "FROM pesanan p " +
-                            "JOIN customer c ON p.idCustomer = c.id";
+                           "JOIN customer c ON p.idCustomer = c.id " +
+                           "WHERE p.idDriver = '" + userId + "'";  // Filter berdasarkan idDriver yang sedang login
 
             ResultSet rs = stmt.executeQuery(query);
 
@@ -57,9 +60,9 @@ public class DriverMenu extends javax.swing.JFrame {
             jTable1.setModel(model);
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Gagal memuat data pesanan dan customer: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Gagal memuat data pesanan: " + e.getMessage());
         }
-    }   
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -174,7 +177,7 @@ public class DriverMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void antarBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_antarBTActionPerformed
-        // Cek apakah tabel memiliki data
+         // Cek apakah tabel memiliki data
         if (jTable1.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "Tabel kosong, tidak ada data untuk diperbarui.");
             return;
@@ -283,7 +286,7 @@ public class DriverMenu extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new DriverMenu().setVisible(true);
+                new DriverMenu(3001).setVisible(true);
             }
         });
     }

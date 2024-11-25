@@ -16,28 +16,32 @@ import javax.swing.table.DefaultTableModel;
  * @author USER
  */
 public class SellerMenu extends javax.swing.JFrame {
-
+    private int userId;
     /**
      * Creates new form UserMenu
      */
-    public SellerMenu() {
+    public SellerMenu(int userId) {
+        this.userId = userId;
         initComponents();
         loadPesanan();
     }
+    // Memuat pesanan yang terkait dengan seller yang sedang login
     private void loadPesanan() {
         DefaultTableModel model = new DefaultTableModel(
             new String[]{"ID Pesanan", "ID Customer", "ID Driver", "Nama", "Nomor Telepon", "Alamat", "Status Pesanan"}, 0);
 
         try {
             Connection conn = dbConnection.getConnection();
-            Statement stmt = conn.createStatement();
-    
-            // Query untuk mendapatkan data pesanan dan customer
+            // Query untuk mendapatkan data pesanan dan customer yang terkait dengan idSeller
             String query = "SELECT p.idPesanan, p.idCustomer, p.idDriver, c.nameFull, c.noHP, c.alamat, p.statusPesanan " +
                            "FROM pesanan p " +
-                            "JOIN customer c ON p.idCustomer = c.id";
+                           "JOIN customer c ON p.idCustomer = c.id " +
+                           "WHERE p.idSeller = ?";  // Filter berdasarkan idSeller yang sedang login
 
-            ResultSet rs = stmt.executeQuery(query);
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, userId);  // Set userId sebagai idSeller
+
+            ResultSet rs = pstmt.executeQuery();
 
             // Loop untuk menambah data ke dalam tabel
             while (rs.next()) {
@@ -211,15 +215,16 @@ public class SellerMenu extends javax.swing.JFrame {
                     if (conn == null || conn.isClosed()) {
                         JOptionPane.showMessageDialog(this, "Koneksi ke database gagal.");
                         return;
-}
+                    }
 
                     // SQL query untuk update statusPesanan
-                    String query = "UPDATE pesanan SET statusPesanan = ? WHERE idPesanan = ?";
+                    String query = "UPDATE pesanan SET statusPesanan = ? WHERE idPesanan = ? AND idSeller = ?";
 
                     // Prepare statement untuk mencegah SQL Injection
                     pstmt = conn.prepareStatement(query);
                     pstmt.setString(1, newStatus); // Set status baru
                     pstmt.setString(2, idPesanan); // Set idPesanan yang dipilih
+                    pstmt.setInt(3, userId); // Pastikan hanya seller yang dipilih yang bisa mengubah status pesanan
 
                     // Eksekusi update
                     int rowsUpdated = pstmt.executeUpdate();
@@ -302,7 +307,7 @@ public class SellerMenu extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SellerMenu().setVisible(true);
+                new SellerMenu(2001).setVisible(true);
             }
         });
     }

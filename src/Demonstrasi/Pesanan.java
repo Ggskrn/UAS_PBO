@@ -3,6 +3,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -13,15 +15,17 @@ import java.sql.SQLException;
  * @author USER
  */
 public class Pesanan extends javax.swing.JFrame {
-
+    private int userId;
     /**
      * Creates new form UserMenu
      */
-    public Pesanan() {
+    public Pesanan(int userId) {
+        this.userId = userId;
         initComponents();     
         loadPesananData();
     }   
-   private void loadPesananData() {
+    // Memuat data pesanan yang terkait dengan idCustomer yang sedang login
+    private void loadPesananData() {
         // Membuat model tabel dengan kolom sesuai dengan data pesanan
         DefaultTableModel model = new DefaultTableModel(
             new String[]{
@@ -32,7 +36,7 @@ public class Pesanan extends javax.swing.JFrame {
         );
 
         // Mendapatkan data pesanan dari database
-        ResultSet rs = dbConnection.getPesanan(); 
+        ResultSet rs = getPesananForCustomer(userId); 
 
         try {
             while (rs.next()) {
@@ -56,6 +60,23 @@ public class Pesanan extends javax.swing.JFrame {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Gagal memuat data pesanan: " + e.getMessage());
         }
+    }
+    
+    // Fungsi untuk mendapatkan pesanan yang terkait dengan idCustomer
+    private ResultSet getPesananForCustomer(int customerId) {
+        ResultSet rs = null;
+        String query = "SELECT p.idPesanan, p.idSeller, p.idDriver, p.totalTshirt, p.totalShirt, p.totalPants, p.totalCost, p.statusPesanan " +
+                       "FROM pesanan p " +
+                       "WHERE p.idCustomer = ?";  // Filter berdasarkan idCustomer yang sedang login
+        try {
+            Connection conn = dbConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, customerId);  // Set idCustomer untuk filter pesanan
+            rs = pstmt.executeQuery();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error saat mengambil data pesanan: " + e.getMessage());
+        }
+        return rs;
     }
 
     /**
@@ -206,7 +227,7 @@ public class Pesanan extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Pesanan().setVisible(true);
+                new Pesanan(1001).setVisible(true);
             }
         });
     }

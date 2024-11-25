@@ -9,10 +9,12 @@ import javax.swing.JOptionPane;
  * @author USER/*
  */
 public class SellerForm extends javax.swing.JFrame {
+    private int userId;
     /**
      * Creates new form Seller
      */
-    public SellerForm() {
+    public SellerForm(int userId) {
+        this.userId = userId;
         initComponents();     
     }
     /**
@@ -222,17 +224,18 @@ public class SellerForm extends javax.swing.JFrame {
     }//GEN-LAST:event_exitActionPerformed
 
     private void simpanBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanBTActionPerformed
-        // TODO add your handling code here:
+        // Ambil data input dari form
         String fullName = ketNama.getText();
         String phoneNumber = ketNomorTelepon.getText();
         String address = ketAlamat.getText();
 
+        // Validasi input
         if (fullName.isEmpty() || phoneNumber.isEmpty() || address.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Semua field harus diisi!", "Peringatan", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Cek apakah customer sudah terdaftar dengan nomor telepon yang sama
+        // Cek apakah nomor telepon sudah terdaftar di tabel 'seller'
         Connection conn = dbConnection.getConnection();
         String checkSQL = "SELECT * FROM seller WHERE noHP = ?";
         try (PreparedStatement checkStmt = conn.prepareStatement(checkSQL)) {
@@ -240,22 +243,23 @@ public class SellerForm extends javax.swing.JFrame {
             ResultSet rs = checkStmt.executeQuery();
 
             if (rs.next()) {
-                // Jika seller sudah terdaftar, arahkan ke menu customer
+                // Jika seller sudah terdaftar, arahkan ke menu seller
                 JOptionPane.showMessageDialog(this, "Anda sudah terdaftar. Klik OK untuk melanjutkan ke menu seller.");
                 this.setVisible(false);
-                new SellerMenu().setVisible(true);
+                new SellerMenu(userId).setVisible(true);
             } else {
-                // Jika seller belum terdaftar, simpan data baru
-                String insertSQL = "INSERT INTO seller (nameFull, noHP, alamat) VALUES (?, ?, ?)";
+                // Jika seller belum terdaftar, simpan data baru ke tabel seller
+                String insertSQL = "INSERT INTO seller (id, nameFull, noHP, alamat) VALUES (?, ?, ?, ?)";
                 try (PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
-                    stmt.setString(1, fullName);
-                    stmt.setString(2, phoneNumber);
-                    stmt.setString(3, address);
+                    stmt.setInt(1, userId);  // Gunakan userId yang diteruskan dari SignUp
+                    stmt.setString(2, fullName);
+                    stmt.setString(3, phoneNumber);
+                    stmt.setString(4, address);
                     stmt.executeUpdate();
 
                     JOptionPane.showMessageDialog(this, "Data berhasil disimpan! Anda sekarang terdaftar.");
                     this.setVisible(false);
-                    new SellerMenu().setVisible(true);
+                    new SellerMenu(userId).setVisible(true);  // Menu Seller
                 } catch (SQLException e) {
                     JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -313,7 +317,7 @@ public class SellerForm extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {              
-                new SellerForm().setVisible(true);
+                new SellerForm(2001).setVisible(true);
             }
         });
     }

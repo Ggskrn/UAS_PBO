@@ -202,7 +202,7 @@ public class SignIn extends javax.swing.JFrame {
     }//GEN-LAST:event_signupklikMouseClicked
 
     private void signinBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signinBTActionPerformed
-        // TODO add your handling code here:
+        // Ambil input login
         String username = usernameTF.getText().trim();
         String password = new String(passwordTF.getPassword());
 
@@ -211,47 +211,56 @@ public class SignIn extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Username dan password harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        String role = validateLogin(username, password);
 
-        if (role == null) {
+        // Cek login dan dapatkan userId dan role
+        UserLoginDetails loginDetails = validateLogin(username, password);
+
+        if (loginDetails == null) {
             JOptionPane.showMessageDialog(this, "Username atau Password salah!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(this, "Login sukses!", "Information", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Login sukses!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
             this.dispose();
 
-           // di arahkan ke dashboard yang sesuai berdasarkan peran
+            // Dapatkan role dan userId dari loginDetails
+            String role = loginDetails.getRole();
+            int userId = loginDetails.getUserId();
+
+            // Arahkan ke dashboard berdasarkan role
             switch (role) {
                 case "Customer":
-                    new CustomerForm().setVisible(true);
+                    new CustomerForm(userId).setVisible(true); // Kirim userId ke CustomerForm
                     break;
                 case "Seller":
-                    new SellerForm().setVisible(true);
+                    new SellerForm(userId).setVisible(true); // Kirim userId ke SellerForm
                     break;
                 case "Driver":
-                    new DriverForm().setVisible(true);
+                    new DriverForm(userId).setVisible(true); // Kirim userId ke DriverForm
                     break;
                 default:
-                    JOptionPane.showMessageDialog(this, "Invalid role!", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Role tidak valid!", "Error", JOptionPane.ERROR_MESSAGE);
                     break;
             }
         }
-    }
-    private String validateLogin(String username, String password) {
+    }//GEN-LAST:event_signinBTActionPerformed
+    // Fungsi untuk memvalidasi login dan mendapatkan userId dan role
+    private UserLoginDetails validateLogin(String username, String password) {
         Connection connection = dbConnection.getConnection();
-        String query = "SELECT role FROM users WHERE username = ? AND password = ?";
+        String query = "SELECT id, role FROM users WHERE username = ? AND password = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, username);
             statement.setString(2, password);
             ResultSet resultSet = statement.executeQuery();
+
             if (resultSet.next()) {
-                return resultSet.getString("role");
+                int userId = resultSet.getInt("id");
+                String role = resultSet.getString("role");
+                return new UserLoginDetails(userId, role); // Kembalikan userId dan role
             }
         } catch (SQLException e) {
             System.out.println("Login error: " + e.getMessage());
         }
-        return null;
-    }//GEN-LAST:event_signinBTActionPerformed
-
+        return null;  // Return null jika login gagal
+    }
     private void usernameTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameTFActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_usernameTFActionPerformed
@@ -304,4 +313,22 @@ public class SignIn extends javax.swing.JFrame {
     private javax.swing.JLabel signupklik;
     private javax.swing.JTextField usernameTF;
     // End of variables declaration//GEN-END:variables
-}
+
+        // Class untuk menyimpan user login details
+        public class UserLoginDetails {
+        private int userId;
+        private String role;
+
+        public UserLoginDetails(int userId, String role) {
+            this.userId = userId;
+            this.role = role;
+        }
+
+        public int getUserId() {
+            return userId;
+        }
+
+        public String getRole() {
+            return role;
+        }
+    }}
