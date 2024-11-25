@@ -1,14 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Demonstrasi;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author FERDI YANSAH
@@ -32,18 +30,8 @@ public class dbConnection {
         }
         return connection;
     }
-     public static void closeConnection() {
-        if (connection != null) {
-            try {
-                connection.close();
-                connection = null;
-                System.out.println("Koneksi ditutup!");
-            } catch (SQLException e) {
-                System.out.println("Gagal menutup koneksi: " + e.getMessage());
-            }
-        }
-    }
-     // Method untuk mengambil data pesanan dari database
+    
+    // Method untuk mengambil data pesanan dari database
     public static ResultSet getPesanan() {
         Connection conn = getConnection();
         if (conn != null) {
@@ -56,5 +44,18 @@ public class dbConnection {
             }
         }
         return null;
+    }
+
+    // Menambahkan method untuk menutup koneksi hanya di akhir aplikasi
+    public static void closeConnection() {
+        if (connection != null) {
+            try {
+                connection.close();
+                connection = null;
+                System.out.println("Koneksi ditutup!");
+            } catch (SQLException e) {
+                System.out.println("Gagal menutup koneksi: " + e.getMessage());
+            }
+        }
     }
 }

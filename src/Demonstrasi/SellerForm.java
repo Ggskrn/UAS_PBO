@@ -215,12 +215,8 @@ public class SellerForm extends javax.swing.JFrame {
 
     private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
         // TODO add your handling code here:
-        int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            this.dispose();
-            SignIn signIn = new SignIn();
-            signIn.setVisible(true);
-        }
+        this.dispose();
+        new Closing().setVisible(true);
     }//GEN-LAST:event_exitActionPerformed
 
     private void simpanBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanBTActionPerformed

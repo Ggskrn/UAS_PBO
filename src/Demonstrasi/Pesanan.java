@@ -24,61 +24,74 @@ public class Pesanan extends javax.swing.JFrame {
         initComponents();     
         loadPesananData();
     }   
-    // Memuat data pesanan yang terkait dengan idCustomer yang sedang login
     private void loadPesananData() {
-        // Membuat model tabel dengan kolom sesuai dengan data pesanan
-        DefaultTableModel model = new DefaultTableModel(
+    DefaultTableModel model = new DefaultTableModel(
             new String[]{
-                "ID Pesanan", "ID Seller", "ID Driver", 
-                "Total T-shirt", "Total Shirt", "Total Pants", 
-                "Total Cost", "Status Pesanan"
+                    "ID Pesanan", "ID Seller", "ID Driver",
+                    "Total T-shirt", "Total Shirt", "Total Pants",
+                    "Total Cost", "Status Pesanan"
             }, 0
-        );
+    );
 
-        // Mendapatkan data pesanan dari database
-        ResultSet rs = getPesananForCustomer(userId); 
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
 
+    try {
+        // Mengambil koneksi dari dbConnection
+        conn = dbConnection.getConnection();
+        
+        // Menyiapkan SQL query untuk mengambil data pesanan
+        String sql = "SELECT idPesanan, idSeller, idDriver, totalTshirt, totalShirt, totalPants, totalCost, statusPesanan " +
+                     "FROM pesanan WHERE idCustomer = ?";
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, userId);
+        
+        // Menjalankan query
+        rs = pstmt.executeQuery();
+
+        boolean hasData = false;
+        while (rs.next()) {
+            hasData = true;
+            Object[] row = {
+                    rs.getString("idPesanan"),
+                    rs.getString("idSeller"),
+                    rs.getString("idDriver"),
+                    rs.getInt("totalTshirt"),
+                    rs.getInt("totalShirt"),
+                    rs.getInt("totalPants"),
+                    rs.getDouble("totalCost"),
+                    rs.getString("statusPesanan")
+            };
+            model.addRow(row);
+        }
+
+        if (!hasData) {
+            JOptionPane.showMessageDialog(this, "Tidak ada pesanan ditemukan untuk pengguna ini.");
+        }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal memuat data pesanan: " + e.getMessage());
+    } finally {
+        // Menutup koneksi dan sumber daya lainnya
         try {
-            while (rs.next()) {
-                // Membaca setiap baris hasil query
-                Object[] row = new Object[8];
-                row[0] = rs.getString("idPesanan");          
-                row[1] = rs.getString("idSeller");
-                row[2] = rs.getString("idDriver");
-                row[3] = rs.getInt("totalTshirt");
-                row[4] = rs.getInt("totalShirt");
-                row[5] = rs.getInt("totalPants");
-                row[6] = rs.getDouble("totalCost");
-                row[7] = rs.getString("statusPesanan");
-
-                // Menambahkan baris ke dalam model tabel
-                model.addRow(row);
+            if (rs != null) {
+                rs.close();
             }
-
-            // Menetapkan model yang sudah terisi ke jTable1
-            jTable1.setModel(model);
+            if (pstmt != null) {
+                pstmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal memuat data pesanan: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Gagal menutup koneksi: " + e.getMessage());
         }
     }
-    
-    // Fungsi untuk mendapatkan pesanan yang terkait dengan idCustomer
-    private ResultSet getPesananForCustomer(int customerId) {
-        ResultSet rs = null;
-        String query = "SELECT p.idPesanan, p.idSeller, p.idDriver, p.totalTshirt, p.totalShirt, p.totalPants, p.totalCost, p.statusPesanan " +
-                       "FROM pesanan p " +
-                       "WHERE p.idCustomer = ?";  // Filter berdasarkan idCustomer yang sedang login
-        try {
-            Connection conn = dbConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, customerId);  // Set idCustomer untuk filter pesanan
-            rs = pstmt.executeQuery();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error saat mengambil data pesanan: " + e.getMessage());
-        }
-        return rs;
-    }
 
+    // Menetapkan model tabel dengan data yang sudah dimuat
+    jTable1.setModel(model);
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -93,7 +106,9 @@ public class Pesanan extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        exitBT = new javax.swing.JButton();
+        bayarBT = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        inputUangTF = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -128,46 +143,56 @@ public class Pesanan extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Snap ITC", 0, 14)); // NOI18N
         jLabel4.setText("PESANAN");
 
-        exitBT.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        exitBT.setText("Exit");
-        exitBT.addActionListener(new java.awt.event.ActionListener() {
+        bayarBT.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        bayarBT.setText("Bayar");
+        bayarBT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitBTActionPerformed(evt);
+                bayarBTActionPerformed(evt);
             }
         });
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel1.setText("Masukkan Uang");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(67, 67, 67))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(34, 34, 34)
+                .addComponent(jLabel4)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(16, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 660, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGap(17, 17, 17)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                    .addGap(601, 601, 601)
-                                    .addComponent(exitBT, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGap(317, 317, 317)
-                            .addComponent(jLabel2))))
-                .addContainerGap(13, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(inputUangTF, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(bayarBT)))
+                .addGap(14, 14, 14))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(8, 8, 8)
+                .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(exitBT)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bayarBT)
+                    .addComponent(jLabel1)
+                    .addComponent(inputUangTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 19, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -178,21 +203,64 @@ public class Pesanan extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
-        // TODO add your handling code here:
-        int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            this.dispose();
-            SignIn signIn = new SignIn();
-            signIn.setVisible(true);
+    private void bayarBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bayarBTActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih pesanan yang ingin dibayar.");
+            return;
         }
-    }//GEN-LAST:event_exitBTActionPerformed
+
+        String idPesanan = jTable1.getValueAt(selectedRow, 0).toString();
+        double totalCost = Double.parseDouble(jTable1.getValueAt(selectedRow, 6).toString());
+
+        String inputUang = inputUangTF.getText();
+        if (inputUang.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Masukkan jumlah uang untuk membayar.");
+            return;
+        }
+
+        double uangMasuk;
+        try {
+            uangMasuk = Double.parseDouble(inputUang);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Input uang tidak valid.");
+            return;
+        }
+
+        if (uangMasuk < totalCost) {
+            JOptionPane.showMessageDialog(this, "Uang yang dimasukkan tidak mencukupi.");
+            return;
+        }
+
+        double kembalian = uangMasuk - totalCost;
+        
+        // Tampilkan struk pembayaran tanpa mengubah status pesanan
+        JOptionPane.showMessageDialog(this,
+                    "Struk Pembayaran:\n" +
+                    "=====================================\n" +        
+                    "ID Pesanan: " + idPesanan + "\n" +
+                    "ID Customer: " + userId + "\n" +
+                    "Total T-shirt: " + jTable1.getValueAt(selectedRow, 3) + "\n" +
+                    "Total Shirt: " + jTable1.getValueAt(selectedRow, 4) + "\n" +
+                    "Total Pants: " + jTable1.getValueAt(selectedRow, 5) + "\n" +
+                    "=====================================\n" +        
+                    "Total Cost: " + totalCost + "\n" +
+                    "=====================================\n" +        
+                    "Uang Masuk: " + uangMasuk + "\n" +
+                    "Kembalian: " + kembalian
+        );       
+        JOptionPane.showMessageDialog(this, "Pembayaran berhasil.");   
+        this.dispose(); 
+        new Closing().setVisible(true);
+    }//GEN-LAST:event_bayarBTActionPerformed
 
     /**
      * @param args the command line arguments
@@ -233,7 +301,9 @@ public class Pesanan extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton exitBT;
+    private javax.swing.JButton bayarBT;
+    private javax.swing.JTextField inputUangTF;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;

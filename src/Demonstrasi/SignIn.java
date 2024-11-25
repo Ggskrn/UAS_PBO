@@ -13,12 +13,13 @@ import javax.swing.JOptionPane;
  * @author USER
  */
 public class SignIn extends javax.swing.JFrame {
-
+    private Connection connection;
     /**
      * Creates new form LoginMenu
      */
     public SignIn() {
         initComponents();
+        connection = dbConnection.getConnection();
     }
 
     /**
@@ -202,17 +203,14 @@ public class SignIn extends javax.swing.JFrame {
     }//GEN-LAST:event_signupklikMouseClicked
 
     private void signinBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signinBTActionPerformed
-       // Ambil input login
-        String username = usernameTF.getText().trim();
+       String username = usernameTF.getText().trim();
         String password = new String(passwordTF.getPassword());
 
-        // Validasi input
         if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Username dan password harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Cek login dan dapatkan userId dan role
         UserLoginDetails loginDetails = validateLogin(username, password);
 
         if (loginDetails == null) {
@@ -221,13 +219,10 @@ public class SignIn extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Login sukses!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
             this.dispose();
 
-            // Dapatkan role dan userId dari loginDetails
             String role = loginDetails.getRole();
             int userId = loginDetails.getUserId();
 
-            // Cek apakah user sudah terdaftar di tabel customer, seller, atau driver
             if (isUserRegistered(role, userId)) {
-                // Jika user sudah terdaftar, langsung arahkan ke menu yang sesuai
                 switch (role) {
                     case "Customer":
                         new CustomerMenu(userId).setVisible(true);
@@ -243,7 +238,6 @@ public class SignIn extends javax.swing.JFrame {
                         break;
                 }
             } else {
-                // Jika user belum terdaftar, arahkan ke form pendaftaran sesuai dengan role mereka
                 switch (role) {
                     case "Customer":
                         new CustomerForm(userId).setVisible(true);
@@ -261,9 +255,7 @@ public class SignIn extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_signinBTActionPerformed
-    // fungsi untuk
     private UserLoginDetails validateLogin(String username, String password) {
-        Connection connection = dbConnection.getConnection();
         String query = "SELECT id, role FROM users WHERE username = ? AND password = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, username);
@@ -273,16 +265,15 @@ public class SignIn extends javax.swing.JFrame {
             if (resultSet.next()) {
                 int userId = resultSet.getInt("id");
                 String role = resultSet.getString("role");
-                return new UserLoginDetails(userId, role); // Kembalikan userId dan role
+                return new UserLoginDetails(userId, role); 
             }
         } catch (SQLException e) {
             System.out.println("Login error: " + e.getMessage());
         }
-        return null;  // Return null jika login gagal
+        return null;
     }
-    // Fungsi untuk mengecek apakah user sudah terdaftar di tabel customer, seller, atau driver
+
     private boolean isUserRegistered(String role, int userId) {
-        Connection connection = dbConnection.getConnection();
         String query = "";
 
         if ("Customer".equals(role)) {
@@ -296,11 +287,11 @@ public class SignIn extends javax.swing.JFrame {
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();  // Jika userId ditemukan, berarti sudah terdaftar
+            return resultSet.next();  
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        return false; // Jika tidak ditemukan, berarti belum terdaftar
+        return false;
     }
     private void usernameTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameTFActionPerformed
         // TODO add your handling code here:

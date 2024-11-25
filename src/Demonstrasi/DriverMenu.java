@@ -214,7 +214,7 @@ public class DriverMenu extends javax.swing.JFrame {
 
                 // Cek apakah update berhasil
                 if (rowsUpdated > 0) {
-                    JOptionPane.showMessageDialog(this, "Status Pesanan berhasil diperbarui menjadi Delivered!");
+                    JOptionPane.showMessageDialog(this, "Status Pesanan berhasil diperbarui!");
                     // Refresh data pesanan setelah pembaruan
                     loadPesanan();
                 } else {
@@ -245,12 +245,8 @@ public class DriverMenu extends javax.swing.JFrame {
 
     private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
         // TODO add your handling code here:
-        int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            this.dispose();
-            SignIn signIn = new SignIn();
-            signIn.setVisible(true);
-        }
+        this.dispose();
+        new Closing().setVisible(true);
     }//GEN-LAST:event_exitBTActionPerformed
 
     /**

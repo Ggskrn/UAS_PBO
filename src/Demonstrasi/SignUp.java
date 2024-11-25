@@ -15,6 +15,86 @@ public class SignUp extends javax.swing.JFrame {
     public SignUp() {
         initComponents();
     }
+    private int generateUserId(String role) {
+        Connection connection = dbConnection.getConnection();
+        int idStart = 0, idEnd = 0;
+
+        // Tentukan rentang ID berdasarkan role
+        switch (role) {
+            case "Customer":
+                idStart = 1000;
+                idEnd = 1999;
+                break;
+            case "Seller":
+                idStart = 2000;
+                idEnd = 2999;
+                break;
+            case "Driver":
+                idStart = 3000;
+                idEnd = 3999;
+                break;
+            default:
+                JOptionPane.showMessageDialog(this, "Role tidak valid!", "Error", JOptionPane.ERROR_MESSAGE);
+                return -1; // Role tidak valid
+        }
+
+        String query = "SELECT MAX(id) AS lastId FROM users WHERE id BETWEEN ? AND ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, idStart);
+            statement.setInt(2, idEnd);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int lastId = resultSet.getInt("lastId");
+            
+                // Jika belum ada ID dalam rentang, gunakan idStart. Jika ada, tambahkan 1.
+                if (lastId == 0) {
+                    return idStart;
+                } else if (lastId < idEnd) {
+                    return lastId + 1;
+                } else {
+                    JOptionPane.showMessageDialog(this, "Tidak ada ID yang tersedia untuk role ini.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return -1; // Rentang penuh
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error saat menghasilkan ID: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }   
+
+        return -1; // Gagal menghasilkan ID
+    }
+    private boolean registerUser(int userId, String username, String password, String role) {
+        Connection connection = dbConnection.getConnection();
+        String query = "INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            statement.setString(2, username);
+            statement.setString(3, password); // Disarankan hashing password
+            statement.setString(4, role);
+
+            int rowsInserted = statement.executeUpdate();
+            return rowsInserted > 0; // True jika insert berhasil
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error saat mendaftar: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return false; // Insert gagal
+    }
+    private boolean isUsernameTaken(String username) {
+        Connection connection = dbConnection.getConnection();
+        String query = "SELECT id FROM users WHERE username = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next(); // True jika username ditemukan
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error saat memeriksa username: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return false; // Tidak ada error, username tidak ditemukan
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -182,44 +262,28 @@ public class SignUp extends javax.swing.JFrame {
         String role = (String) comboRole.getSelectedItem();
 
         // Validasi input
-        if (username.isEmpty() || password.isEmpty() || "Pilih Role".equals(role)) {
+        if (username.isEmpty() || password.isEmpty() || "Choose a role".equals(role)) {
             JOptionPane.showMessageDialog(this, "Semua field harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+    
         // Cek apakah username sudah ada
         if (isUsernameTaken(username)) {
             JOptionPane.showMessageDialog(this, "Username sudah digunakan, pilih username lain.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Generate ID untuk user sesuai role (Customer, Seller, Driver)
+        // Generate ID untuk user sesuai role
         int userId = generateUserId(role);
         if (userId == -1) {
-            JOptionPane.showMessageDialog(this, "Gagal menghasilkan ID untuk pengguna.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            return; // Gagal menghasilkan ID
         }
 
         // Daftarkan user ke tabel users
         if (registerUser(userId, username, password, role)) {
             JOptionPane.showMessageDialog(this, "Pendaftaran berhasil!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
             this.dispose(); // Tutup form SignUp
-
-            // Buka form berdasarkan role dan kirimkan userId ke form terkait
-            switch (role) {
-                case "Customer":
-                    new CustomerForm(userId).setVisible(true); // Kirim userId ke CustomerForm
-                    break;
-                case "Seller":
-                    new SellerForm(userId).setVisible(true); // Kirim userId ke SellerForm
-                    break;
-                case "Driver":
-                    new DriverForm(userId).setVisible(true); // Kirim userId ke DriverForm
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(this, "Invalid role!", "Error", JOptionPane.ERROR_MESSAGE);
-                    break;
-            }
+            new SignIn().setVisible(true); // Kembali ke form SignIn
         } else {
             JOptionPane.showMessageDialog(this, "Pendaftaran gagal. Coba lagi.", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -228,72 +292,7 @@ public class SignUp extends javax.swing.JFrame {
     private void usernameTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameTFActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_usernameTFActionPerformed
-    private int generateUserId(String role) {
-        Connection connection = dbConnection.getConnection();
-        String query = "";
-        int idStart = 0, idEnd = 0;
 
-        // Tentukan rentang ID berdasarkan role
-        if (role.equals("Customer")) {
-            idStart = 1000;
-            idEnd = 1999;
-        } else if (role.equals("Seller")) {
-            idStart = 2000;
-            idEnd = 2999;
-        } else if (role.equals("Driver")) {
-            idStart = 3000;
-            idEnd = 3999;
-        } else {
-            return -1; // Role tidak valid
-        }
-        
-        // Cari ID terakhir dalam rentang
-        query = "SELECT MAX(id) AS lastId FROM users WHERE id BETWEEN ? AND ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, idStart);
-            statement.setInt(2, idEnd);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                int lastId = resultSet.getInt("lastId");
-                // Jika belum ada ID dalam rentang, gunakan idStart, jika ada, tambahkan 1
-                if (lastId == 0) {
-                    return idStart;
-                } else if (lastId < idEnd) {
-                    return lastId + 1;
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Error saat menghasilkan ID: " + e.getMessage());
-        }
-        return -1; // Gagal menghasilkan ID
-    }
-    private boolean registerUser(int userId, String username, String password, String role) {
-        Connection connection = dbConnection.getConnection();
-        String query = "INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, userId);
-            statement.setString(2, username);
-            statement.setString(3, password); // Bisa ditambahkan hashing
-            statement.setString(4, role);
-            int rowsInserted = statement.executeUpdate();
-            return rowsInserted > 0;
-        } catch (SQLException e) {
-            System.out.println("Error saat mendaftar: " + e.getMessage());
-        }
-        return false;
-    }
-    private boolean isUsernameTaken(String username) {
-        Connection connection = dbConnection.getConnection();
-        String query = "SELECT id FROM users WHERE username = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, username);
-            ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();
-        } catch (SQLException e) {
-            System.out.println("Error saat memeriksa username: " + e.getMessage());
-        }
-        return false;
-    }
     /**
      * @param args the command line arguments
      */
