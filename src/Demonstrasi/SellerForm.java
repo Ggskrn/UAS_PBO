@@ -224,7 +224,7 @@ public class SellerForm extends javax.swing.JFrame {
     }//GEN-LAST:event_exitActionPerformed
 
     private void simpanBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanBTActionPerformed
-        // Ambil data input dari form
+       // Ambil data input
         String fullName = ketNama.getText();
         String phoneNumber = ketNomorTelepon.getText();
         String address = ketAlamat.getText();
@@ -235,40 +235,42 @@ public class SellerForm extends javax.swing.JFrame {
             return;
         }
 
-        // Cek apakah nomor telepon sudah terdaftar di tabel 'seller'
+        // Cek apakah nama customer sudah terdaftar di database
+        if (isSellerNameTaken(fullName)) {
+            JOptionPane.showMessageDialog(this, "Nama customer sudah terdaftar. Silakan pilih nama lain.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Jika nama belum terdaftar, simpan data customer baru
         Connection conn = dbConnection.getConnection();
-        String checkSQL = "SELECT * FROM seller WHERE noHP = ?";
-        try (PreparedStatement checkStmt = conn.prepareStatement(checkSQL)) {
-            checkStmt.setString(1, phoneNumber);
-            ResultSet rs = checkStmt.executeQuery();
+        String insertCustomerSQL = "INSERT INTO seller (id, nameFull, noHP, alamat) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(insertCustomerSQL)) {
+            stmt.setInt(1, userId); 
+            stmt.setString(2, fullName);
+            stmt.setString(3, phoneNumber);
+            stmt.setString(4, address);
+            stmt.executeUpdate();
 
-            if (rs.next()) {
-                // Jika seller sudah terdaftar, arahkan ke menu seller
-                JOptionPane.showMessageDialog(this, "Anda sudah terdaftar. Klik OK untuk melanjutkan ke menu seller.");
-                this.setVisible(false);
-                new SellerMenu(userId).setVisible(true);
-            } else {
-                // Jika seller belum terdaftar, simpan data baru ke tabel seller
-                String insertSQL = "INSERT INTO seller (id, nameFull, noHP, alamat) VALUES (?, ?, ?, ?)";
-                try (PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
-                    stmt.setInt(1, userId);  // Gunakan userId yang diteruskan dari SignUp
-                    stmt.setString(2, fullName);
-                    stmt.setString(3, phoneNumber);
-                    stmt.setString(4, address);
-                    stmt.executeUpdate();
-
-                    JOptionPane.showMessageDialog(this, "Data berhasil disimpan! Anda sekarang terdaftar.");
-                    this.setVisible(false);
-                    new SellerMenu(userId).setVisible(true);  // Menu Seller
-                } catch (SQLException e) {
-                    JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
+            JOptionPane.showMessageDialog(this, "SELAMAT!! Anda sekarang terdaftar.");
+            this.setVisible(false);
+            new SellerMenu(userId).setVisible(true);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        } 
     }//GEN-LAST:event_simpanBTActionPerformed
-
+    // Cek apakah nama customer sudah terdaftar
+    private boolean isSellerNameTaken(String fullName) {
+        Connection conn = dbConnection.getConnection();
+        String query = "SELECT id FROM customer WHERE nameFull = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, fullName);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); // Jika ada baris data, berarti nama sudah terdaftar
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Kesalahan saat memeriksa nama customer: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false; // Jika tidak ditemukan nama yang sama
+    }
     private void ketNomorTeleponActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ketNomorTeleponActionPerformed
         // TODO add your handling code here:
         ketNomorTelepon.setText("");

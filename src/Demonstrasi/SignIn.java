@@ -202,7 +202,7 @@ public class SignIn extends javax.swing.JFrame {
     }//GEN-LAST:event_signupklikMouseClicked
 
     private void signinBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signinBTActionPerformed
-        // Ambil input login
+       // Ambil input login
         String username = usernameTF.getText().trim();
         String password = new String(passwordTF.getPassword());
 
@@ -225,24 +225,43 @@ public class SignIn extends javax.swing.JFrame {
             String role = loginDetails.getRole();
             int userId = loginDetails.getUserId();
 
-            // Arahkan ke dashboard berdasarkan role
-            switch (role) {
-                case "Customer":
-                    new CustomerForm(userId).setVisible(true); // Kirim userId ke CustomerForm
-                    break;
-                case "Seller":
-                    new SellerForm(userId).setVisible(true); // Kirim userId ke SellerForm
-                    break;
-                case "Driver":
-                    new DriverForm(userId).setVisible(true); // Kirim userId ke DriverForm
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(this, "Role tidak valid!", "Error", JOptionPane.ERROR_MESSAGE);
-                    break;
+            // Cek apakah user sudah terdaftar di tabel customer, seller, atau driver
+            if (isUserRegistered(role, userId)) {
+                // Jika user sudah terdaftar, langsung arahkan ke menu yang sesuai
+                switch (role) {
+                    case "Customer":
+                        new CustomerMenu(userId).setVisible(true);
+                        break;
+                    case "Seller":
+                        new SellerMenu(userId).setVisible(true);
+                        break;
+                    case "Driver":
+                        new DriverMenu(userId).setVisible(true);
+                        break;
+                    default:
+                        JOptionPane.showMessageDialog(this, "Role tidak valid!", "Error", JOptionPane.ERROR_MESSAGE);
+                        break;
+                }
+            } else {
+                // Jika user belum terdaftar, arahkan ke form pendaftaran sesuai dengan role mereka
+                switch (role) {
+                    case "Customer":
+                        new CustomerForm(userId).setVisible(true);
+                        break;
+                    case "Seller":
+                        new SellerForm(userId).setVisible(true);
+                        break;
+                    case "Driver":
+                        new DriverForm(userId).setVisible(true);
+                        break;
+                    default:
+                        JOptionPane.showMessageDialog(this, "Role tidak valid!", "Error", JOptionPane.ERROR_MESSAGE);
+                        break;
+                }
             }
         }
     }//GEN-LAST:event_signinBTActionPerformed
-    // Fungsi untuk memvalidasi login dan mendapatkan userId dan role
+    // fungsi untuk
     private UserLoginDetails validateLogin(String username, String password) {
         Connection connection = dbConnection.getConnection();
         String query = "SELECT id, role FROM users WHERE username = ? AND password = ?";
@@ -260,6 +279,28 @@ public class SignIn extends javax.swing.JFrame {
             System.out.println("Login error: " + e.getMessage());
         }
         return null;  // Return null jika login gagal
+    }
+    // Fungsi untuk mengecek apakah user sudah terdaftar di tabel customer, seller, atau driver
+    private boolean isUserRegistered(String role, int userId) {
+        Connection connection = dbConnection.getConnection();
+        String query = "";
+
+        if ("Customer".equals(role)) {
+            query = "SELECT id FROM customer WHERE id = ?";
+        } else if ("Seller".equals(role)) {
+            query = "SELECT id FROM seller WHERE id = ?";
+        } else if ("Driver".equals(role)) {
+            query = "SELECT id FROM driver WHERE id = ?";
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();  // Jika userId ditemukan, berarti sudah terdaftar
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false; // Jika tidak ditemukan, berarti belum terdaftar
     }
     private void usernameTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameTFActionPerformed
         // TODO add your handling code here:
@@ -314,8 +355,8 @@ public class SignIn extends javax.swing.JFrame {
     private javax.swing.JTextField usernameTF;
     // End of variables declaration//GEN-END:variables
 
-        // Class untuk menyimpan user login details
-        public class UserLoginDetails {
+    // Class untuk menyimpan user login details
+    public class UserLoginDetails {
         private int userId;
         private String role;
 
@@ -331,4 +372,5 @@ public class SignIn extends javax.swing.JFrame {
         public String getRole() {
             return role;
         }
-    }}
+    }
+}

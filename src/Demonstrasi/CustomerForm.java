@@ -223,72 +223,53 @@ public class CustomerForm extends javax.swing.JFrame {
     }//GEN-LAST:event_exitBTActionPerformed
 
     private void simpanBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanBTActionPerformed
-        // Ambil data input
+       // Ambil data input
         String fullName = ketNama.getText();
         String phoneNumber = ketNomorTelepon.getText();
         String address = ketAlamat.getText();
 
+        // Validasi input
         if (fullName.isEmpty() || phoneNumber.isEmpty() || address.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Semua field harus diisi!", "Peringatan", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Cek apakah ID sudah terdaftar di tabel 'customer'
+        // Cek apakah nama customer sudah terdaftar di database
+        if (isCustomerNameTaken(fullName)) {
+            JOptionPane.showMessageDialog(this, "Nama customer sudah terdaftar. Silakan pilih nama lain.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Jika nama belum terdaftar, simpan data customer baru
         Connection conn = dbConnection.getConnection();
-        String checkSQL = "SELECT * FROM customer WHERE id = ?";
-        try (PreparedStatement checkStmt = conn.prepareStatement(checkSQL)) {
-            checkStmt.setInt(1, userId);
-            ResultSet rs = checkStmt.executeQuery();
+        String insertCustomerSQL = "INSERT INTO customer (id, nameFull, noHP, alamat) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(insertCustomerSQL)) {
+            stmt.setInt(1, userId); // Gunakan ID dari tabel 'users'
+            stmt.setString(2, fullName);
+            stmt.setString(3, phoneNumber);
+            stmt.setString(4, address);
+            stmt.executeUpdate();
 
-            if (rs.next()) {
-                // Jika ID sudah terdaftar di tabel customer, arahkan ke menu customer
-                JOptionPane.showMessageDialog(this, "Anda sudah terdaftar. Klik OK untuk ke menu customer.");
-                this.setVisible(false);
-                new CustomerMenu(userId).setVisible(true);
-            } else {
-                // Jika customer belum terdaftar, simpan data customer baru ke tabel customer
-                String insertCustomerSQL = "INSERT INTO customer (id, nameFull, noHP, alamat) VALUES (?, ?, ?, ?)";
-                try (PreparedStatement stmt = conn.prepareStatement(insertCustomerSQL)) {
-                    stmt.setInt(1, userId); // Gunakan ID dari tabel 'users'
-                    stmt.setString(2, fullName);
-                    stmt.setString(3, phoneNumber);
-                    stmt.setString(4, address);
-                    stmt.executeUpdate();
-
-                    JOptionPane.showMessageDialog(this, "SELAMAT!! Anda sekarang terdaftar.");
-                    this.setVisible(false);
-                    new CustomerMenu(userId).setVisible(true); // Menu Customer
-                } catch (SQLException e) {
-                    JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
+            JOptionPane.showMessageDialog(this, "SELAMAT!! Anda sekarang terdaftar.");
+            this.setVisible(false);
+            new CustomerMenu(userId).setVisible(true); // Menu Customer
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        } 
     }//GEN-LAST:event_simpanBTActionPerformed
-    // Fungsi untuk menghasilkan ID untuk customer
-    private int generateCustomerId() {
-        Connection connection = dbConnection.getConnection();
-        String query = "SELECT MAX(id) AS lastId FROM users WHERE role = 'Customer'";
-        int idStart = 1000;
-        int idEnd = 1999;
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                int lastId = resultSet.getInt("lastId");
-                // Jika belum ada ID dalam rentang, gunakan idStart, jika ada, tambahkan 1
-                if (lastId == 0) {
-                    return idStart;
-                } else if (lastId < idEnd) {
-                    return lastId + 1;
-                }
-            }
+    // Cek apakah nama customer sudah terdaftar
+    private boolean isCustomerNameTaken(String fullName) {
+        Connection conn = dbConnection.getConnection();
+        String query = "SELECT id FROM customer WHERE nameFull = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, fullName);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); // Jika ada baris data, berarti nama sudah terdaftar
         } catch (SQLException e) {
-            System.out.println("Error saat menghasilkan ID: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Kesalahan saat memeriksa nama customer: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        return -1; // Gagal menghasilkan ID
+        return false; // Jika tidak ditemukan nama yang sama
     }
-    
     private void ketNomorTeleponActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ketNomorTeleponActionPerformed
         // TODO add your handling code here:
         ketNomorTelepon.setText("");
