@@ -12,7 +12,7 @@ import java.sql.PreparedStatement;
 
 /**
  *
- * @author USER
+ * @author FERDI YANSAH
  */
 public class Pesanan extends javax.swing.JFrame {
     private int userId;
@@ -80,10 +80,7 @@ public class Pesanan extends javax.swing.JFrame {
             }
             if (pstmt != null) {
                 pstmt.close();
-            }
-            if (conn != null) {
-                conn.close();
-            }
+            }           
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Gagal menutup koneksi: " + e.getMessage());
         }
@@ -259,7 +256,7 @@ public class Pesanan extends javax.swing.JFrame {
         );       
         JOptionPane.showMessageDialog(this, "Pembayaran berhasil.");   
         this.dispose(); 
-        new Closing().setVisible(true);
+        new SignIn().setVisible(true);
     }//GEN-LAST:event_bayarBTActionPerformed
 
     /**

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 /**
  *
- * @author USER
+ * @author FERDI YANSAH
  */
 public class SignIn extends javax.swing.JFrame {
     private Connection connection;
@@ -203,7 +203,7 @@ public class SignIn extends javax.swing.JFrame {
     }//GEN-LAST:event_signupklikMouseClicked
 
     private void signinBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signinBTActionPerformed
-       String username = usernameTF.getText().trim();
+        String username = usernameTF.getText().trim();
         String password = new String(passwordTF.getPassword());
 
         if (username.isEmpty() || password.isEmpty()) {
@@ -345,23 +345,4 @@ public class SignIn extends javax.swing.JFrame {
     private javax.swing.JLabel signupklik;
     private javax.swing.JTextField usernameTF;
     // End of variables declaration//GEN-END:variables
-
-    // Class untuk menyimpan user login details
-    public class UserLoginDetails {
-        private int userId;
-        private String role;
-
-        public UserLoginDetails(int userId, String role) {
-            this.userId = userId;
-            this.role = role;
-        }
-
-        public int getUserId() {
-            return userId;
-        }
-
-        public String getRole() {
-            return role;
-        }
-    }
 }

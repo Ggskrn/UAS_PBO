@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 /**
  *
- * @author USER/*
+ * @author FERDI
  */
 public class CustomerForm extends javax.swing.JFrame {
     private int userId;
@@ -215,7 +215,7 @@ public class CustomerForm extends javax.swing.JFrame {
     private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        new Closing().setVisible(true);
+        new SignIn().setVisible(true);
     }//GEN-LAST:event_exitBTActionPerformed
 
     private void simpanBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanBTActionPerformed

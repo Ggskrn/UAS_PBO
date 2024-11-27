@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 /**
  *
- * @author USER
+ * @author FERDI YANSAH
  */
 public class SignUp extends javax.swing.JFrame {
     /**
@@ -19,7 +19,7 @@ public class SignUp extends javax.swing.JFrame {
         Connection connection = dbConnection.getConnection();
         int idStart = 0, idEnd = 0;
 
-        // Tentukan rentang ID berdasarkan role
+        // rentang ID berdasarkan role
         switch (role) {
             case "Customer":
                 idStart = 1000;

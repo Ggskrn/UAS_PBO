@@ -12,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author USER
+ * @author FERDI YANSAH
  */
 public class SellerMenu extends javax.swing.JFrame {
     private int userId;
@@ -245,10 +245,7 @@ public class SellerMenu extends javax.swing.JFrame {
                     try {
                         if (pstmt != null) {
                             pstmt.close();
-                        }
-                        if (conn != null && !conn.isClosed()) {
-                            conn.close();
-                        }
+                        }                       
                     } catch (SQLException e) {
                         JOptionPane.showMessageDialog(this, "Error closing connection: " + e.getMessage());
                     }
@@ -266,7 +263,7 @@ public class SellerMenu extends javax.swing.JFrame {
     private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        new Closing().setVisible(true);
+        new SignIn().setVisible(true);
     }//GEN-LAST:event_exitBTActionPerformed
 
     /**

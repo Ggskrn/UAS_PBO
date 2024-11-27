@@ -11,7 +11,7 @@ import java.sql.Statement;
 
 /**
  *
- * @author USER
+ * @author FERDI YANSAH
  */
 public class CustomerMenu extends javax.swing.JFrame {
     private int userId;
@@ -356,7 +356,7 @@ public class CustomerMenu extends javax.swing.JFrame {
     private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        new Closing().setVisible(true);  
+        new SignIn().setVisible(true);  
     }//GEN-LAST:event_exitBTActionPerformed
 
     private void ketjumlahCelanaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ketjumlahCelanaActionPerformed

@@ -21,7 +21,7 @@ public class dbConnection {
     public static Connection getConnection() {
         if (connection == null) {
             try {
-                Class.forName("com.mysql.cj.jdbc.Driver"); // Pastikan driver sudah diimpor ke project
+                Class.forName("com.mysql.cj.jdbc.Driver");
                 connection = DriverManager.getConnection(URL, USER, PASSWORD);
                 System.out.println("Koneksi berhasil!");
             } catch (ClassNotFoundException | SQLException e) {
@@ -36,9 +36,9 @@ public class dbConnection {
         Connection conn = getConnection();
         if (conn != null) {
             try {
-                String query = "SELECT * FROM pesanan";  // Query untuk mengambil semua data pesanan
+                String query = "SELECT * FROM pesanan";
                 Statement stmt = conn.createStatement();
-                return stmt.executeQuery(query);  // Mengembalikan ResultSet
+                return stmt.executeQuery(query);
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null, "Gagal mengambil data pesanan: " + e.getMessage());
             }

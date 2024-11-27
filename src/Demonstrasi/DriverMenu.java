@@ -13,7 +13,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author USER
+ * @author FERDI YANSAH
  */
 public class DriverMenu extends javax.swing.JFrame {
     private int userId;
@@ -177,7 +177,7 @@ public class DriverMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void antarBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_antarBTActionPerformed
-         // Cek apakah tabel memiliki data
+        // Cek apakah tabel memiliki data
         if (jTable1.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "Tabel kosong, tidak ada data untuk diperbarui.");
             return;
@@ -199,7 +199,7 @@ public class DriverMenu extends javax.swing.JFrame {
 
             try {
                 // Koneksi ke database
-                conn = dbConnection.getConnection();
+                conn = dbConnection.getConnection(); // Pastikan Anda menggunakan koneksi yang terbuka
 
                 // SQL query untuk update statusPesanan
                 String query = "UPDATE pesanan SET statusPesanan = ? WHERE idPesanan = ?";
@@ -208,7 +208,7 @@ public class DriverMenu extends javax.swing.JFrame {
                 pstmt = conn.prepareStatement(query);
                 pstmt.setString(1, newStatus); // Set status baru menjadi "Delivered"
                 pstmt.setString(2, idPesanan); // Set idPesanan yang dipilih
-                
+
                 // Eksekusi update
                 int rowsUpdated = pstmt.executeUpdate();
 
@@ -226,15 +226,14 @@ public class DriverMenu extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
             } finally {
                 try {
-                    // Pastikan koneksi ditutup setelah operasi selesai
+                    // Pastikan PreparedStatement ditutup
                     if (pstmt != null) {
                         pstmt.close();
                     }
-                    if (conn != null) {
-                        conn.close();
-                    }
+                    // Jangan menutup koneksi di sini jika ingin tetap menggunakannya
+                    // Jika menggunakan pool koneksi, biarkan koneksi tetap terbuka
                 } catch (SQLException e) {
-                    JOptionPane.showMessageDialog(this, "Error closing connection: " + e.getMessage());
+                    JOptionPane.showMessageDialog(this, "Error closing PreparedStatement: " + e.getMessage());
                 }
             }
         } else {
@@ -245,8 +244,8 @@ public class DriverMenu extends javax.swing.JFrame {
 
     private void exitBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBTActionPerformed
         // TODO add your handling code here:
+        new SignIn().setVisible(true);
         this.dispose();
-        new Closing().setVisible(true);
     }//GEN-LAST:event_exitBTActionPerformed
 
     /**
